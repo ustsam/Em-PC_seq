@@ -59,13 +59,16 @@ MUTA=$(wc -l ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | awk '{pr
 
 #Create simulation data 
 echo ${COVERAGE},${MUTA}
+if [ $AMB == 1 ]
+then
+
 python ${SCRIPTDIR}/simulation.py -f ${REFFILE} -c ${COVERAGE} -m ${MUTA} -s ${NUMSIM} -w ${WORKDIR}
 mkdir ${WORKDIR}/Simulation_Data
 mv ${WORKDIR}/sim_*fastq.gz ${WORKDIR}/Simulation_Data
 
 #Calculate the p-values for all the genomic sites with mutation and the site in the transcript
 python ${SCRIPTDIR}/binomial_distribution.py -f ${REFFILE} -w ${WORKDIR} -p ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered  -m ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt 
-
+fi
 ##PLOTTING
 ##This command can be commented if prefer to plot with other plotting tools
 #python plotting.py "data_sorted_filtered_MQ${minMQ}_BQ0.pileup_pysam_count" "data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered" "muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt" ${WORKDIR}
