@@ -69,7 +69,7 @@ for keys in ref_dict:
 		muta=int(a[i][4])
 		pos=int(a[i][1])
 		if cov>0:
-			random_array=np.random.binomial(int(a[i][3]),float(a[i][4])/cov,size=100)	
+			random_array=np.random.binomial(int(a[i][3]),float(a[i][4])/cov,size=numSim)
 			simulation=np.array(muta_sim_dict[keys][pos-1])/cov
 			binom=random_array/cov
 			average_simulation=np.mean(simulation)
