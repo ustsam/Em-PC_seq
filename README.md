@@ -35,7 +35,7 @@ Demo data can be run as following:
 3. Compile the codes by typing `python setup_newreloc.py build_ext --inplace`.
 4. Call the function using 
 
-`bash run_noQsfilter.sh {PATH of the output directory} {PATH of the reference file} {PATH of the script directory} DUMMY 2 ${twice of the max readlength} ${PATH of the data file in gzipped form}`
+`bash run_noQsfilter.sh {PATH to the output directory} {PATH to the reference file} {PATH to the script directory} DUMMY 2 ${twice of the max readlength} ${PATH to the data file in gzipped form}`
 
 notes:
 The data file are suggested to process with triming software for adaptor and low qulaity base before running this script.
