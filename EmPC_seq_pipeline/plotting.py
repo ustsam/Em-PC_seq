@@ -67,6 +67,7 @@ Exp_Genome_Cov={}
 for keys in chroms:
     Exp_Genome_Muta[keys]=[0]*len(ref_dict[keys])
     Exp_Genome_Cov[keys]=[0]*len(ref_dict[keys])
+    Sim_GenomePos=[0]*len(ref_dict[keys])
 
 '''
 for lines in FF:
@@ -92,6 +93,7 @@ GenomePos=np.loadtxt(workdir+"GenomePos_pvalues.txt",dtype=str)[1:]
 Hotspot=GenomePos[GenomePos[:,-1].astype(float)<=0.05]
 Sim_GenomePos=GenomePos[:,[0,1,4,5]]
 
+
 for keys in Exp_Genome_Muta:
     f,ax=plt.subplots(figsize=(20,8))
     fontsize=15
@@ -100,17 +102,24 @@ for keys in Exp_Genome_Muta:
 
     Sim_GenomePos_key=Sim_GenomePos[Sim_GenomePos[:,0]==keys][:,[1,2,3]].astype(float)
     Sim_GenomePos_key=Sim_GenomePos_key[Sim_GenomePos_key[:,1]>0.0]
+
     muta_frequency=Exp_Genome_Muta[keys]/Exp_Genome_Cov[keys]
     muta2=muta_frequency[muta_frequency>0]    
+    Sim_toplot=[]
+    for i in range(len(Sim_GenomePos_key)):
+         if Exp_Genome_Muta[keys][int(Sim_GenomePos_key[i][0])]>0:
+             Sim_toplot.append(Sim_GenomePos_key[i])
+    Sim_toplot=np.array(Sim_toplot)
     label=np.arange(len(muta_frequency))
     label=label[muta_frequency>0]
-    ax.bar(Sim_GenomePos_key[:,0],Sim_GenomePos_key[:,1],1.0,color="gray",zorder=0,label="Simulation")
+    ax.plot(Sim_toplot[:,0],Sim_toplot[:,1],color="k",zorder=0,label="Simulation",lw=1)
+    ax.fill_between(Sim_toplot[:,0],[0]*len(Sim_toplot[:,0]),Sim_toplot[:,1],color='gray',alpha=0.5)
     for i in range(len(label)):
-          ax.plot([label[i],label[i]],[0,muta2[i]],color="red",lw=1,zorder=1)
+          ax.plot([label[i],label[i]],[0,muta2[i]],color="red",lw=2,alpha=0.8,zorder=1)
     ax.plot([label[i],label[i]],[0,muta2[i]],color="red",lw=1,zorder=1,label="Experiment")
     exp_plot=np.stack((label,muta2)).T
     np.savetxt("MutationalFrequency_Exp_chrom_"+str(keys)+".txt",exp_plot)
-    np.savetxt("MutationalFrequency_Sim_chrom_"+str(keys)+".txt",Sim_GenomePos_key)
+    np.savetxt("MutationalFrequency_Sim_chrom_"+str(keys)+".txt",Sim_toplot)
     hs_rate=[]
     HS=Hotspot[Hotspot[:,0]==keys]
     HS_label=HS[:,1].astype(float)
@@ -125,7 +134,7 @@ for keys in Exp_Genome_Muta:
     MinX=[]
     ax.legend(loc=0,fontsize=fontsize)
     ax.set_ylim(0,max(muta_frequency)*1.1)
-    ax.set_xlim(0,max(label)*1.1)
+    ax.set_xlim(min(label)*0.9,max(label)*1.1)
     ax.set_ylabel("Mutational Frequency",fontsize=fontsize)
     ax.set_xlabel(keys,fontsize=fontsize)
     f.savefig(workdir+"Muta_Frequency_inChrom_"+str(keys)+".png")

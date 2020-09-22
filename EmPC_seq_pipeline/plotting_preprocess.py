@@ -54,11 +54,17 @@ for keys in Exp_Genome_Muta:
     Sim_GenomePos_key=Sim_GenomePos_key[Sim_GenomePos_key[:,1]>0.0]
     muta_frequency=Exp_Genome_Muta[keys]/Exp_Genome_Cov[keys]
     muta2=muta_frequency[muta_frequency>0]    
+    Sim_toplot=[]
+    for i in range(len(Sim_GenomePos_key)):
+         if Exp_Genome_Muta[keys][int(Sim_GenomePos_key[i][0])]>0:
+             Sim_toplot.append(Sim_GenomePos_key[i])
+    Sim_toplot=np.array(Sim_toplot)
+
     label=np.arange(len(muta_frequency))
     label=label[muta_frequency>0]
     exp_plot=np.stack((label,muta2)).T
     np.savetxt("MutationalFrequency_Exp_chrom_"+str(keys)+".txt",exp_plot)
-    np.savetxt("MutationalFrequency_Sim_chrom_"+str(keys)+".txt",Sim_GenomePos_key)
+    np.savetxt("MutationalFrequency_Sim_chrom_"+str(keys)+".txt",Sim_toplot)
     HS=Hotspot[Hotspot[:,0]==keys]
     HS_label=HS[:,1].astype(float)
     hs_rate=[]
