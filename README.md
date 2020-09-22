@@ -47,7 +47,7 @@ The data file are suggested to process with triming software for adaptor and low
 `bash data_analysis.sh {PATH to the working directory} {PATH to the reference file} {PATH to the script directory} 1 {maximum depth per site} {minimum base quality} {minimum mapping quality} {number of simulation fastq files generated}`
 
 notes:
-ambiguity is defined as the number of ways a transcript can be mapped to the reference genome. Ambiguity occurs due to the circularization method, which remove the information about the starting point of the transcript. if ambiguity threshold is set to one, only the transcripts having only one way to be mapped are considered in analysis. In the originial publication (https://doi.org/10.1016/j.jmb.2020.04.011), ambiguity threshold is 1. 
+ambiguity is defined as the number of ways a transcript can be mapped to the reference genome. Ambiguity occurs due to the circularization method, which remove the information about the starting point of the transcript. if ambiguity threshold is set to one, only the transcripts having only one way to be mapped are considered in analysis. In the originial publication (https://doi.org/10.1016/j.jmb.2020.04.011), the ambiguity threshold is 1. 
 
 ## Figure plotting
 
