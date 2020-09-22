@@ -24,7 +24,9 @@ Demo data can be run as following:
 3. Enter script directory
 3. Compile the codes by typing `python setup_newreloc.py build_ext --inplace`.
 4. `mkdir demo_data_real_time`
-5. Call the function using `./run_noQsfilter.sh ./demo_data_real_time ./reference/rDNA1.fasta ./ DUMMY 2 600 ./demo_data/sim_00000.fastq.gz `
+5. Call the function using 
+
+`bash run_noQsfilter.sh ./demo_data_real_time ./reference/rDNA1.fasta ./ DUMMY 2 600 ./demo_data/sim_00000.fastq.gz `
 
 ## Usage
 1. Download the zipped script file.
@@ -32,28 +34,34 @@ Demo data can be run as following:
 3. Enter script directory
 3. Compile the codes by typing `python setup_newreloc.py build_ext --inplace`.
 4. Call the function using 
+
 `bash run_noQsfilter.sh {PATH of the output directory} {PATH of the reference file} {PATH of the script directory} DUMMY 2 ${twice of the max readlength} ${PATH of the data file in gzipped form}`
+
 notes:
-1. The data file are suggested to process with triming software for adaptor and low qulaity base before running this script.
+The data file are suggested to process with triming software for adaptor and low qulaity base before running this script.
 
 ## Data analysis
 1. The run_noQsfilter.sh script will output data.sam.gz
 2. To analyze the data, type the following command:
+
 `bash data_analysis.sh {PATH to the working directory} {PATH to the reference file} {PATH to the script directory} 1 {maximum depth per site} {minimum base quality} {minimum mapping quality} {number of simulation fastq files generated}`
 
 notes:
-1. ambiguity is defined as the number of ways a transcript can be mapped to the reference genome. Ambiguity occurs due to the circularization method, which remove the information about the starting point of the transcript. if ambiguity threshold is set to one, only the transcripts having only one way to be mapped are considered in analysis. In the originial publication (https://doi.org/10.1016/j.jmb.2020.04.011), ambiguity threshold is 1. 
+ambiguity is defined as the number of ways a transcript can be mapped to the reference genome. Ambiguity occurs due to the circularization method, which remove the information about the starting point of the transcript. if ambiguity threshold is set to one, only the transcripts having only one way to be mapped are considered in analysis. In the originial publication (https://doi.org/10.1016/j.jmb.2020.04.011), ambiguity threshold is 1. 
 
 ## Figure plotting
 
 To obtain figures in the manuscript, please run the following three main functions:
+
 `bash plot.sh {PATH to the working directory} {PATH to the reference file} {PATH to the script directory} {ambiguity threshold} {maximum depth per site} {minimum base quality} {minimum mapping quality} 1 `
 
 matplotlib should be installed to plot the figures. if it is not installed, please run the following script:
+
 `bash plot.sh {PATH to the working directory} {PATH to the reference file} {PATH to the script directory} {ambiguity threshold} {maximum depth per site} {minimum base quality} {minimum mapping quality} 0 `
 
 ## Output files:
-The output of plot.sh files figures (.png format) are the following:
+The output of plot.sh files figures (.png format) are the following:    
+
 a)	“Distribution_NumberOfWaysToMap.png” : the distribution of the number of ways the transcripts can be mapped to the reference genome (ambiguity). The y-axis is the number of transcripts and the x-axis is ambiguity.
 
 b)	“MutationTypeSpectrum.png” : The mutational frequency for each type of mutation  in the RNA transcript. The mutational frequency is the number of errors divided by the coverage of the corresponding reference base. For example: number of A>C errors divided by coverage of base A.
@@ -63,6 +71,7 @@ c)	“Muta_Frequency_inChrom_###.png”: The mutational frequency along the site
 d)	“ErrorRate_per_PositionInTranscripts.png”: The error rate at each position in the transcript. The Position 0 corresponds to the 3’ end of the transcript.
 
 If one would prefer to use othe software tools, the output text files to plot the figures are:
+
 a)	“Distribution_of_Ambiguity.txt” can be used to plot Figure a).
 
 b)	“MutationTypeSpectrum.txt” can be used plot Figure b). 
