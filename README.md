@@ -26,7 +26,6 @@ Demo data can be run as following:
 4. `mkdir demo_data_real_time`
 5. Call the function using `./run_noQsfilter.sh ./demo_data_real_time ./reference/rDNA1.fasta ./ DUMMY 2 600 ./demo_data/sim_00000.fastq.gz `
 
-
 ## Usage
 1. Download the zipped script file.
 2. Unzip the file.
@@ -34,12 +33,16 @@ Demo data can be run as following:
 3. Compile the codes by typing `python setup_newreloc.py build_ext --inplace`.
 4. Call the function using 
 `bash run_noQsfilter.sh {PATH of the output directory} {PATH of the reference file} {PATH of the script directory} DUMMY 2 ${twice of the max readlength} ${PATH of the data file in gzipped form}`
+notes:
+1. The data file are suggested to process with triming software for adaptor and low qulaity base before running this script.
 
-The data file are suggested to process with triming software for adaptor and low qulaity base before running this script.
 ## Data analysis
 1. The run_noQsfilter.sh script will output data.sam.gz
 2. To analyze the data, type the following command:
-`bash data_analysis.sh {PATH to the working directory} {PATH to the reference file} {PATH to the script directory} {ambiguity threshold} {maximum depth per site} {minimum base quality} {minimum mapping quality} {number of simulation data generated}`
+`bash data_analysis.sh {PATH to the working directory} {PATH to the reference file} {PATH to the script directory} {ambiguity threshold} {maximum depth per site} {minimum base quality} {minimum mapping quality} {number of simulation fastq files generated}`
+
+notes:
+1. ambiguity is defined as the number of ways a transcript can be mapped to the reference genome. Ambiguity occurs due to the circularization method, which remove the information of the starting point of the transcript. ambiguity threshold is one means that only the transcripts that only has one way to be mapped. In the originial publication (https://doi.org/10.1016/j.jmb.2020.04.011), ambiguity threshold is 1. 
 
 ## Figure plotting
 
@@ -48,6 +51,19 @@ To obtain figures in the manuscript, please run the following three main functio
 
 matplotlib should be installed to plot the figures. if it is not installed, please run the following script:
 `bash plot.sh {PATH to the working directory} {PATH to the reference file} {PATH to the script directory} {ambiguity threshold} {maximum depth per site} {minimum base quality} {minimum mapping quality} 0 `
+
+## Output files:
+The output of plot.sh files figures (.png format) are the following:
+a)	“Distribution_NumberOfWaysToMap.png” : the distribution of the number of ways the transcripts can be mapped to the reference genome (ambiguity). The y-axis is the number of transcripts and the x-axis is ambiguity.
+b)	“MutationTypeSpectrum.png” : The mutational frequency for each type of mutation  in the RNA transcript. The mutational frequency is the number of errors divided by the coverage of the corresponding reference base. For example: number of A  C errors divided by coverage of base A.
+c)	“Muta_Frequency_inChrom_***.png”: The mutational frequency along the sites in the chromosome for the experimental and simulation data. “***” is the name of the chromosome. The transcription error-enriched genomic loci (TEEL) is shown as red dots.
+d)	“ErrorRate_per_PositionInTranscripts.png”: The error rate at each position in the transcript. The Position 0 corresponds to the 3’ end of the transcript.
+
+If one would prefer to use othe software tools, the output text files to plot the figures are:
+a)	“Distribution_of_Ambiguity.txt” can be used to plot Figure a).
+b)	“MutationTypeSpectrum.txt” can be used plot Figure b). 
+c)	For Figure c), “MutationalFrequency_Exp_chrom_***.txt” and “MutationalFrequency_Sim_chrom_***.txt” are the files containing the Mutational Frequencies per site in a chromosome for experimental and simulation,respectively. “MutationalFrequency_TEEL_chrom_rDNA1.txt” contains the mutational frequency of the sites considered as TEEL. The first column is the position in the chromosome and the second column is the mutational frequency. 
+d)	“MutationalFrequency_PerPositionInTranscript.txt” can be used to plot Figure d). The first column is the position in the transcript. The second and third column is the average and standard deviation of the simulation data. The fourth and fifth column is the average and standard deviation of the experimental data. The average and standard deviation of experimental data is calculated from error rate binomial distribution estimated by maximum likelihood.
 
 ## Methodology:
 
