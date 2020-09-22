@@ -19,10 +19,10 @@ PLOT=$6
 
 if [ $PLOT == 1 ]
 then
-python plotting.py "data_sorted_filtered_MQ${minMQ}_BQ0.pileup_pysam_count" "data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered" "muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt" ${WORKDIR} ${REFFILE}
+python ${SCRIPTDIR}/plotting.py ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ0.pileup_pysam_count ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt ${WORKDIR} ${REFFILE}
 
 elif [ ${PLOT} == 0 ]
 then
-python plotting_preprocess.py "data_sorted_filtered_MQ${minMQ}_BQ0.pileup_pysam_count" "data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered" "muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt" ${WORKDIR} ${REFFILE}
+python ${SCRIPTDIR}/plotting_preprocess.py ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ0.pileup_pysam_count ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt ${WORKDIR} ${REFFILE}
 
 fi

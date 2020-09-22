@@ -26,7 +26,7 @@ samtools view ${WORKDIR}/data_sorted.bam | awk -F 'UN:i:' -v j=${AMB} '$2<=j' | 
 #this is specifically for ribosomal DNA, since most rDNA are transcribed in negative direction, thus we assume that the 3' end is in the beginning of the transcript. 
 #To remove the biotin position, we add the start of the transcript by one (assuming rDNA and negative transcription). we also remove the length of each trancsript by one.
 #To make the file containing the starting site and length for each transcript for input to simulation.py
-samtools view ${WORKDIR}/data_sorted_filtered.bam | awk '{print $3,$4+1,length($10)-1}' >& startlengths.txt 
+samtools view ${WORKDIR}/data_sorted_filtered.bam | awk '{print $3,$4+1,length($10)-1}' >& ${WORKDIR}/startlengths.txt 
 
 #use this command if direction of transcription is known
 #samtools view ${WORKDIR}/data_sorted_filtered.bam | awk '{if($2==16) print $4+1,length($10)-1,$2 ; else if($2==0) print $4,length($10)-1,$2}' >& startlengths.txt 
@@ -35,36 +35,36 @@ samtools index ${WORKDIR}/data_sorted_filtered.bam
 #Make two kindes of pileup file
 #we need to use the pysam to remove the biotin site
 #the pysam code is specific for rDNA, where we assume that all transcription is in the negative direction, thus the starting of the transcript is the 3' end 
-python pysam_make_pileup.py -b ${WORKDIR}/data_sorted_filtered.bam -f ${REFFILE} -d ${MAX_DEPTH} -q ${minMQ} -Q ${minBQ} -c 0 -w ${WORKDIR}
-python pysam_make_pileup.py -b ${WORKDIR}/data_sorted_filtered.bam -f ${REFFILE} -d ${MAX_DEPTH} -q ${minMQ} -Q 0 -c 0 -w ${WORKDIR}
+python ${SCRIPTDIR}/pysam_make_pileup.py -b ${WORKDIR}/data_sorted_filtered.bam -f ${REFFILE} -d ${MAX_DEPTH} -q ${minMQ} -Q ${minBQ} -c 0 -w ${WORKDIR}
+python ${SCRIPTDIR}/pysam_make_pileup.py -b ${WORKDIR}/data_sorted_filtered.bam -f ${REFFILE} -d ${MAX_DEPTH} -q ${minMQ} -Q 0 -c 0 -w ${WORKDIR}
 
 #Filter the mutation to remove the mutation with error rate per site larger than 0.01
-awk '$5/$4<=0.01 && $5/$4>0.0' data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count >mutaToKeep.txt
-temp=$(wc -l mutaToKeep.txt | awk '{print $1}')
+awk '$5/$4<=0.01 && $5/$4>0.0' ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count >mutaToKeep.txt
+temp=$(wc -l ${WORKDIR}/mutaToKeep.txt | awk '{print $1}')
 declare -i filelength=$temp
-for ((i=1; i<=$filelength; i+=1))  ; do chrom=$(sed -n ""$i"p" mutaToKeep.txt | awk '{print $1}' ) ; pos=$(sed -n ""$i"p" mutaToKeep.txt | awk '{print $2}') ; awk -v chrom=$chrom -v pos=$pos '$1==chrom && $2==pos' muta_reads_MQ${minMQ}_BQ${minBQ}.txt  ; done &> muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt
-awk '{if($5/$4>0.01) $5=0 ; print $0}' data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count | sed 's/\ /\t/g' >& data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered
+for ((i=1; i<=$filelength; i+=1))  ; do chrom=$(sed -n ""$i"p" ${WORKDIR}/mutaToKeep.txt | awk '{print $1}' ) ; pos=$(sed -n ""$i"p" ${WORKDIR}/mutaToKeep.txt | awk '{print $2}') ; awk -v chrom=$chrom -v pos=$pos '$1==chrom && $2==pos' ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}.txt  ; done &> ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt
+awk '{if($5/$4>0.01) $5=0 ; print $0}' ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count | sed 's/\ /\t/g' >& ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered
 
 #Count the number of mutations at each position in a transcript
-awk '{print $6}' muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | sort -n | uniq -c | awk '{print $2-1,$1}' >& muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt
+awk '{print $6}' ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | sort -n | uniq -c | awk '{print $2-1,$1}' >& ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt
 
 #Calculate the error rate for each mutation type in the RNA transcript
-awk '{print $3">"$5}' muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | sort -n | uniq -c | awk '{print $2,$1}' | sed 's/>/\ /g' >& MutaCountType ; for i in "A" "U" "G" "C" ; do COV=$(awk -v k=$i '{if($1==k) print $2}' BaseTypeCount_MQ${minMQ}_BQ${minBQ}.txt) ; awk -v k=$i -v cov=$COV '{if($1==k) print $1">"$2,$3/cov}' MutaCountType ; done >& MutationTypeSpectrum.txt
+awk '{print $3">"$5}' ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | sort -n | uniq -c | awk '{print $2,$1}' | sed 's/>/\ /g' >& ${WORKDIR}/MutaCountType ; for i in "A" "U" "G" "C" ; do COV=$(awk -v k=$i '{if($1==k) print $2}' ${WORKDIR}/BaseTypeCount_MQ${minMQ}_BQ${minBQ}.txt) ; awk -v k=$i -v cov=$COV '{if($1==k) print $1">"$2,$3/cov}' ${WORKDIR}/MutaCountType ; done >& ${WORKDIR}/MutationTypeSpectrum.txt
 
 #Generate simulation files
 #For this example, since we use the most strict requirement for the ambiguity (ambiguity is 1). 
 #We do not need to do circularization for the simulation data (without -r tag for the simulation.py)
-COVERAGE=$(awk '{sum+=$4} END {print sum}' data_sorted_filtered_MQ${minMQ}_BQ0.pileup_pysam_count)
-MUTA=$(wc -l muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | awk '{print $1}')
+COVERAGE=$(awk '{sum+=$4} END {print sum}' ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ0.pileup_pysam_count)
+MUTA=$(wc -l ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | awk '{print $1}')
 
 #Create simulation data 
 echo ${COVERAGE},${MUTA}
-python simulation.py -f ${REFFILE} -c ${COVERAGE} -m ${MUTA} -s 100 -w ${WORKDIR}
-mkdir Simulation_Data
-mv sim_*fastq.gz Simulation_Data
+python ${SCRIPTDIR}/simulation.py -f ${REFFILE} -c ${COVERAGE} -m ${MUTA} -s 100 -w ${WORKDIR}
+mkdir ${WORKDIR}/Simulation_Data
+mv ${WORKDIR}/sim_*fastq.gz ${WORKDIR}/Simulation_Data
 
 #Calculate the p-values for all the genomic sites with mutation and the site in the transcript
-python binomial_distribution.py -f ${REFFILE} -w ${WORKDIR} -p data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered  -m muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt 
+python ${SCRIPTDIR}/binomial_distribution.py -f ${REFFILE} -w ${WORKDIR} -p ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count_filtered  -m ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_PosReads.txt 
 
 ##PLOTTING
 ##This command can be commented if prefer to plot with other plotting tools
