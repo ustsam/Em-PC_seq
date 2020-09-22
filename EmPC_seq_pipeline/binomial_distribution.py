@@ -60,7 +60,7 @@ for j in range(numSim):
 
 pvalue=[]
 a=np.loadtxt(workdir+pileup,dtype=str)
-out=open("GenomePos_pvalues.txt","wt")
+out=open(workdir+"GenomePos_pvalues.txt","wt")
 out.write("Chrom Position Coverage NoOfErrors AverageErrorRate_Simulation StdErrorRate_Simulation AverageErrorRate_Binom StdErrorRate_Binom P_values\n")
 for keys in ref_dict:
 	for i in range(len(a)):
@@ -108,11 +108,11 @@ Exp_MutaPos=[0]*len(depth_per_readpos)
 for i in range(len(FF)):
 	Exp_MutaPos[int(FF[i][0])]=float(FF[i][1])
 
-out=open("ReadPos_pvalues.txt","wt")
+out=open(workdir+"ReadPos_pvalues.txt","wt")
 out.write("PositionInTranscript CoverageInPosition NoOfErrors AverageErrorRate_Simulation StdErrorRate_Simulation AverageErrorRate_Binom StdErrorRate_Binom P_values\n")
 for i in range(len(depth_per_readpos)):
 	if depth_per_readpos[i]>0 :
-		random_array=np.random.binomial(depth_per_readpos[i],float(Exp_MutaPos[i])/depth_per_readpos[i],size=100)
+		random_array=np.random.binomial(depth_per_readpos[i],float(Exp_MutaPos[i])/depth_per_readpos[i],size=numSim)
 		simulation=np.array(muta_pos_dict[i])/float(depth_per_readpos[i])
 		binom=random_array/float(depth_per_readpos[i])
 		pv=diffvaf(simulation,binom)
