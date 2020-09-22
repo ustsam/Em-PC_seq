@@ -15,7 +15,7 @@ AMB=$4 # Ambiguity Threshold, ambiguity is the number of ways a transcript can b
 MAX_DEPTH=$5 #Maximum Depth per sites for mpileup 
 minBQ=$6
 minMQ=$7
-
+NUMSIM=$8
 ##SAM FILE PROCESSING
 samtools view -bT ${REFFILE} ${WORKDIR}/data.sam.gz | samtools sort > ${WORKDIR}/data_sorted.bam
 
@@ -39,7 +39,7 @@ python ${SCRIPTDIR}/pysam_make_pileup.py -b ${WORKDIR}/data_sorted_filtered.bam 
 python ${SCRIPTDIR}/pysam_make_pileup.py -b ${WORKDIR}/data_sorted_filtered.bam -f ${REFFILE} -d ${MAX_DEPTH} -q ${minMQ} -Q 0 -c 0 -w ${WORKDIR}
 
 #Filter the mutation to remove the mutation with error rate per site larger than 0.01
-awk '$5/$4<=0.01 && $5/$4>0.0' ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count >mutaToKeep.txt
+awk '$5/$4<=0.01 && $5/$4>0.0' ${WORKDIR}/data_sorted_filtered_MQ${minMQ}_BQ${minBQ}.pileup_pysam_count >${WORKDIR}/mutaToKeep.txt
 temp=$(wc -l ${WORKDIR}/mutaToKeep.txt | awk '{print $1}')
 declare -i filelength=$temp
 for ((i=1; i<=$filelength; i+=1))  ; do chrom=$(sed -n ""$i"p" ${WORKDIR}/mutaToKeep.txt | awk '{print $1}' ) ; pos=$(sed -n ""$i"p" ${WORKDIR}/mutaToKeep.txt | awk '{print $2}') ; awk -v chrom=$chrom -v pos=$pos '$1==chrom && $2==pos' ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}.txt  ; done &> ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt
@@ -59,7 +59,7 @@ MUTA=$(wc -l ${WORKDIR}/muta_reads_MQ${minMQ}_BQ${minBQ}_filtered.txt | awk '{pr
 
 #Create simulation data 
 echo ${COVERAGE},${MUTA}
-python ${SCRIPTDIR}/simulation.py -f ${REFFILE} -c ${COVERAGE} -m ${MUTA} -s 100 -w ${WORKDIR}
+python ${SCRIPTDIR}/simulation.py -f ${REFFILE} -c ${COVERAGE} -m ${MUTA} -s ${NUMSIM} -w ${WORKDIR}
 mkdir ${WORKDIR}/Simulation_Data
 mv ${WORKDIR}/sim_*fastq.gz ${WORKDIR}/Simulation_Data
 
