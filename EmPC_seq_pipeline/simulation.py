@@ -1,7 +1,7 @@
-#Author: Ilona Christy Unarta 15/09/200
+#Author: Ilona Christy Unarta (e-mail: icunarta@connect.ust.hk)
+#Institution: HKUST (September 2020)
 #Objective: Generate simulation file with equally distribution mutation along a transcript
-#
-#
+
 
 import random as rd
 import optparse
