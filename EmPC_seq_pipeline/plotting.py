@@ -96,7 +96,7 @@ Sim_GenomePos=GenomePos[:,[0,1,4,5]]
 
 for keys in Exp_Genome_Muta:
     f,ax=plt.subplots(figsize=(20,8))
-    fontsize=15
+    fontsize=25
     width=1
     Exp_Genome_Cov[keys][Exp_Genome_Cov[keys]==0]=1
 
@@ -137,6 +137,10 @@ for keys in Exp_Genome_Muta:
     ax.set_xlim(min(label)*0.9,max(label)*1.1)
     ax.set_ylabel("Mutational Frequency",fontsize=fontsize)
     ax.set_xlabel(keys,fontsize=fontsize)
+    ax.ticklabel_format(axis='y',style='sci',scilimits=(0,0))
+    ax.yaxis.offsetText.set_fontsize(fontsize-5)
+    plt.tick_params("x",labelsize=fontsize-5)
+    plt.tick_params("y",labelsize=fontsize-5)
     f.savefig(workdir+"Muta_Frequency_inChrom_"+str(keys)+".png")
 
 #Plot the error frequency at each position in the transcripts (from the 3prime end of the transcript).
