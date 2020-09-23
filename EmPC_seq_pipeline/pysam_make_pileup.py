@@ -1,10 +1,7 @@
 #Author: Ilona Christy Unarta (e-mail: icunarta@connect.ust.hk)
-#Institution: HKUST (2020)
-#Objective:
-#
-#
-#
-#
+#Institution: HKUST (September 2020)
+#Objective: To create pileup file with the biotin site neglected.
+
 
 import numpy as np
 import os 
