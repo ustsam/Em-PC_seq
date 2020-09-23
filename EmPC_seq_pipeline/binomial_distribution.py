@@ -1,3 +1,8 @@
+#Author: Ilona Christy Unarta (e-mail: icunarta@connect.ust.hk)
+#Institution: HKUST (September 2020)
+#Objective: Create a set of data based on the binomial distribution fitted to experimental data by maximum likelihood. 
+#Then calculate the p-value of this set of data compared with simulation data
+
 import os
 import numpy as np
 import optparse 
