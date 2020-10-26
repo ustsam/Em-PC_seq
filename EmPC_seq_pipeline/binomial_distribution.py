@@ -55,27 +55,30 @@ muta_sim_dict={}
 for keys in ref_dict:
 	muta_sim_dict[keys]=[[]]*len(ref_dict[keys])
 	for i in range(len(muta_sim_dict[keys])):
-		muta_sim_dict[keys][i]=[0]*numSim
+		muta_sim_dict[keys][i]=np.zeros(numSim)
 	
 for j in range(numSim):
-	FF=np.loadtxt(file_lists[j],dtype=str)
+	os.system("awk '$3>0' "+str(workdir)+str(file_lists[j])+" > "+str(workdir)+"temp")
+	FF=np.loadtxt(workdir+"temp",dtype=str)
 	for i in range(len(FF)):
 		muta_sim_dict[FF[i][0]][int(FF[i][1])-1][j]=float(FF[i][2])
 
 
 pvalue=[]
-a=np.loadtxt(workdir+pileup,dtype=str)
+cc=np.loadtxt(workdir+pileup,dtype=str)
 out=open(workdir+"GenomePos_pvalues.txt","wt")
 out.write("Chrom Position Coverage NoOfErrors AverageErrorRate_Simulation StdErrorRate_Simulation AverageErrorRate_Binom StdErrorRate_Binom P_values\n")
 for keys in ref_dict:
+	a=cc[cc[:,0]==keys]
 	for i in range(len(a)):
 		line=[]
 		cov=float(a[i][3])
 		muta=int(a[i][4])
 		pos=int(a[i][1])
+		chrom=str(a[i][0])
 		if cov>0:
 			random_array=np.random.binomial(int(a[i][3]),float(a[i][4])/cov,size=numSim)
-			simulation=np.array(muta_sim_dict[keys][pos-1])/cov
+			simulation=np.array(muta_sim_dict[chrom][pos-1])/cov
 			binom=random_array/cov
 			average_simulation=np.mean(simulation)
 			std_simulation=np.std(simulation)
